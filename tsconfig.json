@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    "target": "es5", //어떤버전의 js로 컴파일할지 정의,
+    "baseUrl": "./src", // 추가된 것 ./src를 절대 경로로 지정
+    "lib": [ //어떤 환경에서 사용하는지 정의(api자동완성 제공해줌)
+      "dom", //브라우저
+      "dom.iterable",
+      "esnext"
+    ],
+    "allowJs": true, //ts안에서 js허용(js파일 import가능)
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react",
+    //"jsx": "react-jsx"  //TS변경시 에러
+    "typeRoots": ["/assets/image"]  //파일경로 에러제거 images.d.ts 파일생성
+  },
+  "include": [ //컴파일할 폴더 입력. src의 모든파일 확인함
+    "src"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
