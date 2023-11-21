@@ -14,7 +14,7 @@ export default function Footer() {
 
   //render
   return (
-    <div className='footer'>
+    <div id='footer'>
       <div className='footer-container'>
         <div className='footer-top'>
           <div className='footer-logo-box'>

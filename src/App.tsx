@@ -1,33 +1,44 @@
+import { AUTH_PATH, BOARD_DETAIL_PATH, BOARD_PATH, BOARD_UPDATE_PATH, BOARD_WRITE_PATH, MAIN_PATH, SEARCH_PATH, USER_PATH } from 'constant';
+import Container from 'layouts/Container';
+import Footer from 'layouts/Footer';
 import React, { useState } from 'react';
-import {latestBoardListMock, top3BoardListMock, commentListMock, favoriteListMock } from "mocks";
-import BoardItem from 'components/BoardItem';
-import Top3Item from 'components/Top3Item';
-import CommentItem from 'components/CommentItem';
-import FavoriteItem from 'components/FavoriteItem';
-import InputBox from 'components/InputBox';
+import { Route, Routes } from 'react-router-dom';
+import Authentication from 'views/Authentication';
+import BoardDetail from 'views/Board/Detail';
+import BoardUpdate from 'views/Board/Update';
+import BoardWrite from 'views/Board/Write';
+import Main from 'views/Main';
+import Search from 'views/Search';
+import User from 'views/User';
 
+//component
 function App() {
  
   const [value, setValue] = useState<string>('');
-
+  
+  //render
+  //description 메인화면: '/' Main
+  //description 로그인 + 회원가입 : '/auth' Authentication
+  //description 검색화면 : '/search/:searchWord' Search
+  //description 유저페이지 : '/user/:userEmail' User
+  //description 게시물 상세보기 : '/board/detail/:boardNumber' BoardDetail
+  //description 게시물 작성하기 : '/board/write/:boardNumber' BoardWrite
+  //description 게시물 수정하기 : '/board/update/:boardNumber' BoardUpdate
   return (
-    <>
-      <div style={{display: 'flex', justifyContent: 'center', gap: '24px'}}>
-        <div>
-          {latestBoardListMock.map(boardListItem => <BoardItem boardListItem={boardListItem}/>)}
-        </div>
-        <div>
-          {top3BoardListMock.map(Top3ListItem => <Top3Item top3ListItem={Top3ListItem}/>)}
-        </div>
-        <div style={{padding: '0 20px', display: 'flex', flexDirection: 'column', gap: '30px'}}>
-          {commentListMock.map(commentListItem => <CommentItem commentListItem={commentListItem}/>)}
-        </div>
-        <div style={{display: 'flex', columnGap: '30px', rowGap: '20px'}}>
-          {favoriteListMock.map(favoriteListItem => <FavoriteItem favoriteListItem={favoriteListItem}/>)}
-        </div>
-        <InputBox label='이메일' type='text' placeholder='이메일 주소를 입력해주세요' value={value} error={false} setValue={setValue} message='message!'  />
-      </div>
-    </>
+     <Routes>
+      <Route element={<Container/>}>
+        <Route path={MAIN_PATH()} element={<Main/>}/>
+        <Route path={AUTH_PATH()} element={<Authentication/>}/>
+        <Route path={SEARCH_PATH(':searchWord')} element={<Search/>}/>
+        <Route path={USER_PATH(':userEmail')} element={<User/>}/>
+        <Route path={BOARD_PATH()}>
+          <Route path={BOARD_WRITE_PATH()} element={<BoardWrite/>}/>
+          <Route path={BOARD_DETAIL_PATH(':boardNumber')} element={<BoardDetail/>}/>
+          <Route path={BOARD_UPDATE_PATH(':boardNumber')} element={<BoardUpdate/>}/>
+        </Route>
+        <Route path='*' element={<h1>404 Not Found</h1>}/>
+      </Route>
+    </Routes>
   );
 }
 
