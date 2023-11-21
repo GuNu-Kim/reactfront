@@ -1,6 +1,8 @@
 import React, { ChangeEvent, Dispatch, forwardRef, KeyboardEvent, SetStateAction } from 'react';
 import './style.css';
 
+
+//interface
 interface Props{
     label: string;
     type: 'text' | 'password';
@@ -17,11 +19,13 @@ interface Props{
     onKeyDown?: (event: KeyboardEvent<HTMLInputElement>) => void;
 }
 
-/*컴포넌트*/
+//component
 const InputBox = forwardRef<HTMLInputElement, Props>((props: Props, ref) => {
     
+    //state
     const {label, type, error, placeholder, value, setValue, icon, onButtonClick, message, onKeyDown} = props;
-
+    
+    //event handler
     const onChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
         const {value} = event.target;
         setValue(value);
@@ -31,7 +35,7 @@ const InputBox = forwardRef<HTMLInputElement, Props>((props: Props, ref) => {
         onKeyDown(event);
     };
 
-    /*컴포넌트 랜더링*/
+    //render
     return(
         <div className='inputbox'>
             <div className='inputbox-label'>{label}</div>
