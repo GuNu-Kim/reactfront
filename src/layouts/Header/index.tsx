@@ -49,7 +49,7 @@ export default function Header() {
     }, [searchWord]);
     
     if(!searchStatus)
-    //render
+    //render: Search
     return(
       <div className='icon-button' onClick={onSearchButtonClickHandler}>
         <div className='icon search-light-icon'></div>
@@ -64,7 +64,9 @@ export default function Header() {
       </div>
     );
   }
-  //render
+
+
+  //render:  Main
   return (
     <div id='header'>
       <div className='header-container'>
@@ -72,7 +74,7 @@ export default function Header() {
           <div className='icon-box'>
             <div className='icon logo-dark-icon'></div>
           </div>
-          <div className='header-logo'>{'kuns Boardddddddd'}</div>
+          <div className='header-logo'>{'kuns Board'}</div>
         </div>
         <div className='header-right-box'>
           <SearchButton />
