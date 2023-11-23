@@ -1,11 +1,18 @@
 import React, { KeyboardEvent, ChangeEvent, useRef, useState, useEffect } from 'react';
 import './style.css';
 import { useNavigate, useParams } from 'react-router-dom';
-import { MAIN_PATH, SEARCH_PATH } from 'constant';
+import { AUTH_PATH, MAIN_PATH, SEARCH_PATH, USER_PATH } from 'constant';
+import { useCookies } from 'react-cookie';
+import { useLoginUserStore } from 'stores';
 
 //component
 export default function Header() {
   
+  //state cookie상태, 로그인상태
+  const [cookie, setCookie] = useCookies();
+  const [isLogin, setLogin] = useState<boolean>(false);
+  const {loginUser, setLoginUser, resetLoginUser} = useLoginUserStore();
+
   //function
   const navigate = useNavigate();
 
@@ -14,7 +21,7 @@ export default function Header() {
     navigate(MAIN_PATH());
   }
 
-  //component
+  //component 검색
   const SearchButton = () => {
     //state
     const [searchStatus, setSearchStatus] = useState<boolean>(false);
@@ -65,6 +72,32 @@ export default function Header() {
     );
   }
 
+  //component 마이페이지 버튼
+  const MyPageButton = () => {
+    //state
+    const {userEmail} = useParams();
+
+    //event handler
+    const onMyPageButtonClickHandler = () => {
+      if(!loginUser) return;
+      const {email} = loginUser;
+      navigate(USER_PATH(email));
+    };
+    const onSingOutButtonClickHandler = () => {
+      resetLoginUser();
+      navigate(MAIN_PATH());
+    };
+    const onSignInButtonClickHandler = () => {
+      navigate(AUTH_PATH());
+    };
+
+    if(isLogin && userEmail===loginUser?.email)
+    return(<div className='white-button' onClick={onSingOutButtonClickHandler}>{'로그아웃'}</div>);
+    if(isLogin)
+    //render
+    return(<div className='white-button' onClick={onMyPageButtonClickHandler}>{'마이페이지'}</div>);
+    return(<div className='black-button' onClick={onSignInButtonClickHandler}>{'로그인'}</div>);
+  }
 
   //render:  Main
   return (
@@ -78,6 +111,7 @@ export default function Header() {
         </div>
         <div className='header-right-box'>
           <SearchButton />
+          <MyPageButton />
         </div>
       </div>
     </div>

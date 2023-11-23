@@ -1,7 +1,6 @@
 import { AUTH_PATH, BOARD_DETAIL_PATH, BOARD_PATH, BOARD_UPDATE_PATH, BOARD_WRITE_PATH, MAIN_PATH, SEARCH_PATH, USER_PATH } from 'constant';
 import Container from 'layouts/Container';
-import Footer from 'layouts/Footer';
-import React, { useState } from 'react';
+import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import Authentication from 'views/Authentication';
 import BoardDetail from 'views/Board/Detail';
@@ -10,12 +9,10 @@ import BoardWrite from 'views/Board/Write';
 import Main from 'views/Main';
 import Search from 'views/Search';
 import User from 'views/User';
+import './App.css';
 
 //component
 function App() {
- 
-  const [value, setValue] = useState<string>('');
-  
   //render
   //description 메인화면: '/' Main
   //description 로그인 + 회원가입 : '/auth' Authentication
