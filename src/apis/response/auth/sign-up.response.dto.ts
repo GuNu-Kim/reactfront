@@ -1,4 +1,6 @@
-export default interface SignUpResponseDto {
+import ResponseDto from "../Response.dto";
+
+export default interface SignUpResponseDto extends ResponseDto {
   email: string;
   password: string;
   nickname: string;
