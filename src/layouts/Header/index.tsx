@@ -95,6 +95,7 @@ export default function Header() {
     };
     const onSingOutButtonClickHandler = () => {
       resetLoginUser();
+      setCookie('accessToken', '', { path: MAIN_PATH(), expires: new Date() })
       navigate(MAIN_PATH());
     };
     const onSignInButtonClickHandler = () => {
@@ -124,7 +125,7 @@ export default function Header() {
     return(<div className='black-button' onClick={onUploadButtonClickHandler}>{'업로드'}</div>);
     return(<div className='disable-button'>{'업로드'}</div>);
   }
-  //effect
+  //effect: path가 변경될 때 마다 실행될 함수
   useEffect(() => {
     const isAuthPage = pathname.startsWith(AUTH_PATH());
     setAuthPage(isAuthPage);
@@ -141,6 +142,11 @@ export default function Header() {
     const isUserPage = pathname.startsWith(USER_PATH(''));
     setUserPage(isUserPage);
   },[pathname]);
+
+  //effect: login user가 변경될 때 마다 실행될 함수 
+  useEffect(() => {
+    setLogin(loginUser !== null);
+  },[loginUser])
 
   //render:  Main
   return (
