@@ -1,5 +1,3 @@
 import ResponseDto from './Response.dto';
 
-export type {
-  ResponseDto
-};
+export type {ResponseDto};
