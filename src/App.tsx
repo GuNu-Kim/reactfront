@@ -8,7 +8,7 @@ import BoardUpdate from 'views/Board/Update';
 import BoardWrite from 'views/Board/Write';
 import Main from 'views/Main';
 import Search from 'views/Search';
-import User from 'views/User';
+import UserP from 'views/User';
 import './App.css';
 import { useCookies } from 'react-cookie';
 import { useLoginUserStore } from 'stores';
