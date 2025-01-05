@@ -4,12 +4,16 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { AUTH_PATH, BOARD_DETAIL_PATH, BOARD_PATH, BOARD_UPDATE_PATH, BOARD_WRITE_PATH, MAIN_PATH, SEARCH_PATH, USER_PATH } from 'constant';
 import { useCookies } from 'react-cookie';
 import { useBoardStore, useLoginUserStore } from 'stores';
+import { PostboardRequestDto } from 'apis/request/board';
+import { PostBoardResponseDto } from 'apis/response/board';
+import { fileUploadRequest, postBoardRequest } from 'apis';
+import { ResponseDto } from 'apis/response';
 
 //component
 export default function Header() {
   
   //state cookie상태, 로그인상태
-  const [cookie, setCookie] = useCookies();
+  const [cookies, setCookie] = useCookies();
   const [isLogin, setLogin] = useState<boolean>(false);
   const {loginUser, setLoginUser, resetLoginUser} = useLoginUserStore();
   
@@ -116,10 +120,41 @@ export default function Header() {
     //state
     const {title, content, boardImageFileList, resetBoard} = useBoardStore();
 
-    //event Handler
-    const onUploadButtonClickHandler = () =>{
+    const postBoardResponse = (responseBody: PostBoardResponseDto | ResponseDto | null) => {
+      if(!responseBody) return;
+      const {code} = responseBody;
+      if(code === 'DBE') alert('데이터베이스 오류입니다.')
+      if(code==='AF' || code === 'NU') navigate(AUTH_PATH());
+      if(code === 'VF') alert('제목과 내용은 필수 입니다.');
+      if(code !== 'SU') return;
 
+      resetBoard();
+      if(!loginUser) return;
+      const { email } = loginUser;
+      navigate(USER_PATH(email));
     }
+
+    //event Handler
+    const onUploadButtonClickHandler = async () => {
+      const accessToken = cookies.accessToken;
+      if(!accessToken) return;
+
+      const boardImageList: string[] = [];
+
+      for(const file of boardImageFileList){
+        const data = new FormData();
+        data.append('file', file);
+
+        const url = await fileUploadRequest(data);
+        if(url) boardImageList.push(url);
+      }
+
+      const requestBody: PostboardRequestDto = {
+        title, content, boardImageList
+      }
+      postBoardRequest(requestBody, accessToken).then(postBoardResponse);
+    }
+
     //render
     if(title && content)
     return(<div className='black-button' onClick={onUploadButtonClickHandler}>{'업로드'}</div>);
