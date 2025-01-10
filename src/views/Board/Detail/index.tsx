@@ -5,36 +5,48 @@ import { CommentListItem, FavoriteListItem } from 'types/interface';
 import { commentListMock, favoriteListMock } from 'mocks';
 import CommentItem from 'components/CommentItem';
 import Pagination from 'components/Pagination';
+import defaultProfileImage from 'assets/image/default-profile-image.png';
 
 //component
 export default function BoardDetail() {
   
   const BoardDetailTop = () => {
+
+    //state
+    const[showMore, setShowMore] = useState<boolean>(false);
+
+    // event handler
+    const onMoreButtonClickHandler = () => {
+      setShowMore(!showMore);
+    }
+
     return (
       <div id='board-detail-top'>
         <div className='board-detail-header'>
           <div className='board-detail-title'>{'오늘 점심 뭐먹지 맛있는거 먹고싶은데 추천 부탁'}</div>
           <div className='board-detail-top-sub-box'>
             <div className='board-detail-write-info-box'>
-              <div className='board-detail-writer-profile-image'></div>
+              <div className='board-detail-writer-profile-image' style={{backgroundImage: `url(${defaultProfileImage})`}}></div>
               <div className='board-detail-writer-nickname'>{'안녕하세요나는주코야끼'}</div>
               <div className='board-detail-info-divider'>{'\|'}</div>
               <div className='board-detail-writer-date'>{'2024. 11. 23.'}</div>
             </div>
-            <div className='icon-button'>
+            <div className='icon-button' onClick={onMoreButtonClickHandler}>
               <div className='icon more-icon'></div>
             </div>
+            {showMore &&
             <div className='board-detail-more-box'>
               <div className='board-detail-update-button'>{'수정'}</div>
               <div className='divider'></div>
               <div className='board-detail-delete-button'>{'삭제'}</div>
             </div>
+            }
           </div>
         </div>
         <div className='divider'></div>
         <div className='board-detail-top-main'>
           <div className='board-detail-main-text'>{'게시글 내용 입력된 곳 !!!! 입력하면 나옵니다'}</div>
-          <div className='board-detail-main-image'></div>
+          <img className='board-detail-main-image' src='https://img.etnews.com/news/article/2024/12/31/news-p.v1.20241231.e56dd1386396440ebad490d4c7f3cb03_P1.jpg' />
         </div>
       </div>
     )
@@ -56,14 +68,14 @@ export default function BoardDetail() {
             <div className='icon-button'>
               <div className='icon favorite-fill-icon'></div>
             </div>
-            <div className='board-detail-bottom-button-text'>{`종아요 ${12}`}</div>
+            <div className='board-detail-bottom-button-text'>{`좋아요 ${12}`}</div>
             <div className='icon-button'>
               <div className='icon up-light-icon'></div>
             </div>
           </div>
           <div className='board-detail-bottom-button-group'>
             <div className='icon-button'>
-              <div className='icon comment-fill-icon'></div>
+              <div className='icon comment-icon'></div>
             </div>
             <div className='board-detail-bottom-button-text'>{`댓글 ${12}`}</div>
             <div className='icon-button'>
@@ -90,7 +102,7 @@ export default function BoardDetail() {
           <div className='board-detail-bottom-comment-pagination-box'>
             <Pagination />
           </div>
-          <div className='board-detail-bottom-comment-input-container'>
+          <div className='board-detail-bottom-comment-input-box'>
             <div className='board-detail-bottom-comment-input-container'>
               <textarea className='board-detail-bottom-comment-textarea' placeholder='댓글을 작성해주세요.' />
               <div className='board-detail-bottom-comment-button-box'>
