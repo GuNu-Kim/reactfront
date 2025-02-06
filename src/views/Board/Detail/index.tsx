@@ -2,24 +2,26 @@ import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
 import './style.css';
 import FavoriteItem from 'components/FavoriteItem';
 import { Board, CommentListItem, FavoriteListItem } from 'types/interface';
-import { commentListMock, favoriteListMock } from 'mocks';
 import CommentItem from 'components/CommentItem';
 import Pagination from 'components/Pagination';
 import defaultProfileImage from 'assets/image/default-profile-image.png';
 import { useLoginUserStore } from 'stores';
 import { useNavigate, useParams } from 'react-router-dom';
 import { BOARD_PATH, BOARD_UPDATE_PATH, MAIN_PATH, USER_PATH } from 'constant';
-import { getBoardRequest, getCommentListRequest, getFavoriteListRequest, increaseViewCountRequest } from 'apis';
+import { DeleteBoardRequest, getBoardRequest, getCommentListRequest, getFavoriteListRequest, increaseViewCountRequest, postCommentRequest, putFavoriteRequest } from 'apis';
 import GetBoardResponseDto from 'apis/response/board/get-board.response.dto';
 import { ResponseDto } from 'apis/response';
-import { GetCommentListResponseDto, GetFavoriteListResponseDto, IncreaseViewCountResponseDto } from 'apis/response/board';
+import { DeleteBoardResponseDto, GetCommentListResponseDto, GetFavoriteListResponseDto, IncreaseViewCountResponseDto, PostBoardResponseDto, PutFavoriteResponseDto } from 'apis/response/board';
 import dayjs from 'dayjs';
+import { useCookies } from 'react-cookie';
+import { PostCommentRequestDto } from 'apis/request/board';
 
 //Component
 export default function BoardDetail() {
   //State
   const {boardNumber} = useParams();
   const {loginUser } = useLoginUserStore();
+  const [cookies, setCookies] = useCookies();
 
   //Function
   const navigator = useNavigate();
@@ -47,7 +49,7 @@ export default function BoardDetail() {
 
     const getBoardResponse = (responseBody: GetBoardResponseDto | ResponseDto | null) => {
       if(!responseBody) return;
-      const {code } = responseBody;
+      const { code } = responseBody;
       if(code === 'NB') alert('존재하지 않는 게시물 입니다.');
       if(code === 'DBE') alert('데이터베이스 오류 입니다.');
       if(code !== 'SU') {
@@ -64,6 +66,21 @@ export default function BoardDetail() {
       }
       const isWriter = loginUser.email === board.writerEmail;
       setWriter(isWriter);
+    }
+
+    const deleteBoardResponse = (responseBody: DeleteBoardResponseDto | ResponseDto | null) => {
+      if(!responseBody) return;
+      const { code } = responseBody;
+
+      if(code === 'VF') alert('잘못된 접근입니다.');
+      if(code === 'NU') alert('존재하지 않는 유저 입니다.');
+      if(code === 'NB') alert('존재하지 않는 게시물 입니다.');
+      if(code === 'AF') alert('인증에 실패했습니다.');
+      if(code === 'NP') alert('권한이 없습니다.');
+      if(code === 'DBE') alert('데이터베이스 오류 입니다.');
+      if(code !== 'SU') return;
+
+      navigator(MAIN_PATH());
     }
 
     // event handler
@@ -84,10 +101,12 @@ export default function BoardDetail() {
     }
     //삭제
     const onDeleteButtonClickHandler = () => {
-      if(!board) return;
-      //if(!board || !loginUser) return;
-      //if(loginUser.email !== board.writerEmail) return;
+      if(!boardNumber || !board || !loginUser || !cookies.accessToken) return;
+      if(loginUser.email !== board.writerEmail) return;
+      
       //TODO delete request 만들기
+      DeleteBoardRequest(boardNumber, cookies.accessToken).then(deleteBoardResponse);
+
       navigator(MAIN_PATH());
     }
     
@@ -162,6 +181,7 @@ export default function BoardDetail() {
       const { favoriteList } = responseBody as GetFavoriteListResponseDto;
       setFavoriteList(favoriteList);
 
+      //좋아요 누른상태 표시
       if(!loginUser) {
         setFavorite(false);
         return;
@@ -180,6 +200,36 @@ export default function BoardDetail() {
       const { commentList } = responseBody as GetCommentListResponseDto;
       setCommentList(commentList);
     }
+
+    const putFavoriteResponse = (responseBody: PutFavoriteResponseDto | ResponseDto | null ) => {
+      if(!responseBody) return;
+      const { code } = responseBody;
+      if(code === 'VF') alert('잘못된 접근입니다.');
+      if(code === 'NU') alert('존재하지 않는 유저 입니다.');
+      if(code === 'NB') alert('존재하지 않는 게시물 입니다.');
+      if(code === 'AF') alert('인증에 실패했습니다.');
+      if(code === 'DBE') alert('데이터베이스 오류입니다.');
+      if(code !== 'SU') return;
+
+      if(!boardNumber) return;
+      getFavoriteListRequest(boardNumber).then(getFavoriteListResponse);
+    }
+
+    const postCommentResponse = (responseBody: PostBoardResponseDto | ResponseDto | null) => {
+      if(!responseBody) return;
+      const { code } = responseBody;
+      if(code === 'VF') alert('잘못된 접근입니다.');
+      if(code === 'NU') alert('존재하지 않는 유저 입니다.');
+      if(code === 'NB') alert('존재하지 않는 게시물 입니다.');
+      if(code === 'AF') alert('인증에 실패했습니다.');
+      if(code === 'DBE') alert('데이터베이스 오류입니다.');
+      if(code !== 'SU') return;
+
+      setComment('');
+
+      if(!boardNumber) return;
+      getCommentListRequest(boardNumber).then(getCommentListResponse);
+    }
     
     //Event Handler
     const onShowFavoriteClickHandler = () => {
@@ -189,11 +239,13 @@ export default function BoardDetail() {
       setShowComment(!showComment);
     }
     const onFavoriteClickHandler = () => {
-      setFavorite(!isFavorite);
+      if(!boardNumber || !loginUser || !cookies.accessToken) return;
+      putFavoriteRequest(boardNumber, cookies.accessToken).then(putFavoriteResponse);
     }
     const onCommentsubmitButtonClickHandler = () => {
-      if(!comment) return;
-        alert('!!!');
+      if(!comment || !boardNumber || !loginUser || !cookies.accessToken) return;
+      const requestBody: PostCommentRequestDto = {content: comment};
+      postCommentRequest(boardNumber, requestBody, cookies.accessToken).then(postCommentResponse);
     }
     const onCommentChangeHandler = (event: ChangeEvent<HTMLTextAreaElement>) => {
       const { value }= event.target;
