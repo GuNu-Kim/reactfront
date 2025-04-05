@@ -94,7 +94,7 @@ export default function BoardWrite() {
           <div className='board-write-content-box'>
             <textarea ref={contentRef} className='board-write-content-textarea' placeholder='본문을 작성해주세요.' value={content} onChange={onContentChangeHandler} />
             <div className='icon-button' onClick={onImageUploadButtonClickHandler}>
-              <div className='image-box-light-icon'></div>
+              <div className='icon image-box-light-icon'></div>
             </div>
             <input ref={imageInputRef} type='file' accept='image/*' style={{display: 'none'}} onChange={onImageChangeHandler} />
           </div>
