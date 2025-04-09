@@ -14,11 +14,11 @@ export default function Top3Item({top3ListItem}: Props) {
     const {boardNumber, title, content, boardTitleImage, favoriteCount, commentCount, viewCount, writeDatetime, writerNickname, writerProfileImage} = top3ListItem;
 
     /*네비게이트 함수 */
-    const navigator = useNavigate();
+    const navigate = useNavigate();
 
     /*게시물 아이템 클릭 이벤트 처리 함수*/
     const onclickHandler = () => {
-        navigator(boardNumber);
+        navigate(boardNumber);
     }
     /*컴포넌트 랜더링*/
     return (

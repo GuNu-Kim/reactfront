@@ -25,7 +25,7 @@ export default function BoardDetail() {
   const [cookies, setCookies] = useCookies();
 
   //Function
-  const navigator = useNavigate();
+  const navigate = useNavigate();
   const increaseViewCountResponse = (responseBody: IncreaseViewCountResponseDto | ResponseDto | null) => {
     if(!responseBody) return;
     const {code} = responseBody;
@@ -54,7 +54,7 @@ export default function BoardDetail() {
       if(code === 'NB') alert('존재하지 않는 게시물 입니다.');
       if(code === 'DBE') alert('데이터베이스 오류 입니다.');
       if(code !== 'SU') {
-        navigator(MAIN_PATH());
+        navigate(MAIN_PATH());
         return;
       }
 
@@ -81,13 +81,13 @@ export default function BoardDetail() {
       if(code === 'DBE') alert('데이터베이스 오류 입니다.');
       if(code !== 'SU') return;
 
-      navigator(MAIN_PATH());
+      navigate(MAIN_PATH());
     }
 
     // event handler
     const onNicknameClickHandler = () => {
       if(!board) return;
-      navigator(USER_PATH(board.writerEmail));
+      navigate(USER_PATH(board.writerEmail));
     }
 
     const onMoreButtonClickHandler = () => {
@@ -98,7 +98,7 @@ export default function BoardDetail() {
       if(!board) return;
       //if(!board || !loginUser) return;
       //if(loginUser.email !== board.writerEmail) return;
-      navigator(BOARD_PATH() + '/' + BOARD_UPDATE_PATH(board.boardNumber));
+      navigate(BOARD_PATH() + '/' + BOARD_UPDATE_PATH(board.boardNumber));
     }
     //삭제
     const onDeleteButtonClickHandler = () => {
@@ -108,13 +108,13 @@ export default function BoardDetail() {
       //TODO delete request 만들기
       DeleteBoardRequest(boardNumber, cookies.accessToken).then(deleteBoardResponse);
 
-      navigator(MAIN_PATH());
+      navigate(MAIN_PATH());
     }
     
     //effect 게시물 번호 path variable이 바뀔때 마다 게시물 불러오기
     useEffect(() => {
       if(!boardNumber) {
-        navigator(MAIN_PATH());
+        navigate(MAIN_PATH());
         return;
       }
       getBoardRequest(boardNumber).then(getBoardResponse);

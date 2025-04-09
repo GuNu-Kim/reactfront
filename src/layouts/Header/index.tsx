@@ -4,9 +4,9 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { AUTH_PATH, BOARD_DETAIL_PATH, BOARD_PATH, BOARD_UPDATE_PATH, BOARD_WRITE_PATH, MAIN_PATH, SEARCH_PATH, USER_PATH } from 'constant';
 import { useCookies } from 'react-cookie';
 import { useBoardStore, useLoginUserStore } from 'stores';
-import { PostboardRequestDto } from 'apis/request/board';
-import { PostBoardResponseDto } from 'apis/response/board';
-import { fileUploadRequest, postBoardRequest } from 'apis';
+import { PatchBoardRequestDto, PostboardRequestDto } from 'apis/request/board';
+import { PatchBoardResponseDto, PostBoardResponseDto } from 'apis/response/board';
+import { fileUploadRequest, patchBoardRequest, postBoardRequest } from 'apis';
 import { ResponseDto } from 'apis/response';
 
 //component
@@ -118,12 +118,13 @@ export default function Header() {
   const UploadButton = () => {
     
     //state
+    const {boardNumber} = useParams();
     const {title, content, boardImageFileList, resetBoard} = useBoardStore();
 
     const postBoardResponse = (responseBody: PostBoardResponseDto | ResponseDto | null) => {
       if(!responseBody) return;
       const {code} = responseBody;
-      if(code === 'DBE') alert('데이터베이스 오류입니다.')
+      if(code === 'DBE') alert('데이터베이스 오류입니다.');
       if(code==='AF' || code === 'NU') navigate(AUTH_PATH());
       if(code === 'VF') alert('제목과 내용은 필수 입니다.');
       if(code !== 'SU') return;
@@ -132,6 +133,18 @@ export default function Header() {
       if(!loginUser) return;
       const { email } = loginUser;
       navigate(USER_PATH(email));
+    }
+
+    const patchBoardResponse = (responseBody: PatchBoardResponseDto | ResponseDto | null) => {
+      if(!responseBody) return;
+      const {code} = responseBody;
+      if(code === 'DBE') alert('데이터베이스 오류입니다.');
+      if(code==='AF' || code === 'NU' || code === 'NB' || code === 'NP') navigate(AUTH_PATH());
+      if(code === 'VF') alert('제목과 내용은 필수 입니다.');
+      if(code !== 'SU') return;
+
+      if(!boardNumber) return;
+      navigate(BOARD_PATH() + '/' + BOARD_DETAIL_PATH(boardNumber));
     }
 
     //event Handler
@@ -149,10 +162,20 @@ export default function Header() {
         if(url) boardImageList.push(url);
       }
 
-      const requestBody: PostboardRequestDto = {
-        title, content, boardImageList
+      const isWriterPage = pathname === BOARD_PATH() + '/' + BOARD_WRITE_PATH();
+      if(isWriterPage) {
+        const requestBody: PostboardRequestDto = {
+          title, content, boardImageList
+        }
+        postBoardRequest(requestBody, accessToken).then(postBoardResponse);
       }
-      postBoardRequest(requestBody, accessToken).then(postBoardResponse);
+      else{
+        if(!boardNumber) return;
+        const requestBody: PatchBoardRequestDto = {
+          title, content, boardImageList
+        }
+        patchBoardRequest(boardNumber, requestBody, accessToken).then(patchBoardResponse);
+      }
     }
 
     //render
