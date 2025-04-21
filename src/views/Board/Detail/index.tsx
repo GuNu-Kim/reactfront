@@ -99,6 +99,7 @@ export default function BoardDetail() {
       //if(!board || !loginUser) return;
       //if(loginUser.email !== board.writerEmail) return;
       navigate(BOARD_PATH() + '/' + BOARD_UPDATE_PATH(board.boardNumber));
+      
     }
     //삭제
     const onDeleteButtonClickHandler = () => {
@@ -180,7 +181,7 @@ export default function BoardDetail() {
     const getFavoriteListResponse = (responseBody: GetFavoriteListResponseDto | ResponseDto | null) => {
       if(!responseBody) return;
       const { code } = responseBody;
-      if(code === 'NB') alert('존재하지 않는 게시물입니다.');
+      if(code === 'NB') alert('존재하지 않는 게시물입니다.-favorite');
       if(code === 'DBE') alert('데이터베이스 오류 입니다.');
       if(code !== 'SU') return;
 
@@ -199,7 +200,7 @@ export default function BoardDetail() {
     const getCommentListResponse = (responseBody: GetCommentListResponseDto | ResponseDto | null) => {
       if(!responseBody) return;
       const { code } = responseBody;
-      if(code === 'NB') alert('존재하지 않는 게시물입니다.');
+      if(code === 'NB') alert('존재하지 않는 게시물입니다.-commnent');
       if(code === 'DBE') alert('데이터베이스 오류 입니다.');
       if(code !== 'SU') return;
 
