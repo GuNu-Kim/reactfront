@@ -7,6 +7,11 @@ import BoardItem from 'components/BoardItem';
 import Pagination from 'components/Pagination';
 import { useNavigate } from 'react-router-dom';
 import { SEARCH_PATH } from 'constant';
+import { getLatestBoardListRequest, getPopularListRequest, getTop3BoardListRequest } from 'apis';
+import { GetLatestBoardListResponseDto, GetTop3BoardListResponseDto } from 'apis/response/board';
+import { ResponseDto } from 'apis/response';
+import { usePagination } from 'hooks';
+import { GetPopularListResponseDto } from 'apis/response/search';
 
 //component 
 export default function Main() {
@@ -19,9 +24,20 @@ export default function Main() {
     //state 주간 top3 게시물 리스트 상태
     const [top3BoardList, setTop3BoardList] = useState<BoardListItem[]>([]);
 
+    // function 주간 top3 게시물 리스트 상태 업데이트 함수
+    const getTop3BoardListResponse = (responseBody: GetTop3BoardListResponseDto | ResponseDto | null) => {
+      if (!responseBody) return;
+      const { code } = responseBody;
+      if (code === 'DBE') alert('데이터베이스 오류입니다.');
+      if (code !== 'SU') return;
+      const { top3List } = responseBody as GetTop3BoardListResponseDto;
+      setTop3BoardList(top3List);
+    }
+
     //effect 첫 마운트 시 실행될 함수
     useEffect(() => {
-      setTop3BoardList(top3BoardListMock);
+      //setTop3BoardList(top3BoardListMock);
+      getTop3BoardListRequest().then(getTop3BoardListResponse);
     }, []);
 
     //render 상단 랜더링
@@ -29,7 +45,7 @@ export default function Main() {
     <>
       <div id = 'main-top-wrapper'>
         <div className='main-top-container'>
-          <div className='main-top-title'>{'군우\'s보드에서\n다양한 이야기를 나눠보세요'}</div>
+          <div className='main-top-title'>{'Kun\'s보드에서\n다양한 이야기를 나눠보세요'}</div>
           <div className='main-top-content-box'>
             <div className='main-top-content-title'>{'주간 TOP3 게시글'}</div>
             <div className='main-top-content'>
@@ -45,9 +61,33 @@ export default function Main() {
   //component 하단 컴포넌트
   const MainBottom = () => {
     
-    //state 최신 게시물 리스트 상태
-    const [currentBoardList, setcurrentBoardList] = useState<BoardListItem[]>([]);
+    //state 페이지네이션 관련 상태
+    const { 
+      currentPage, currentSection, viewList, viewPageList, totalSection,
+      setCurrentPage, setCurrentSection, setTotalList  
+    } = usePagination<BoardListItem>(5);
+    
+    // state 인기검색어 상태
     const [popularWordList, setPopularWordList] = useState<string[]>([]);
+
+    //function getLatestBoardListResponse
+    const getLatestBoardListResponse = (responseBody: GetLatestBoardListResponseDto | ResponseDto | null) => {
+      if (!responseBody) return;
+      const { code } = responseBody;
+      if (code === 'DBE') alert('데이터베이스 오류입니다.');
+      if (code !== 'SU') return;
+      const { latestList } = responseBody as GetLatestBoardListResponseDto;
+      setTotalList(latestList);
+    }
+
+    const getPopularListResponse = (responseBody: GetPopularListResponseDto | ResponseDto | null) => {
+      if (!responseBody) return;
+      const { code } = responseBody;
+      if (code === 'DBE') alert('데이터베이스 오류입니다.');
+      if (code !== 'SU') return;
+      const { popularWordList } = responseBody as GetPopularListResponseDto;
+      setPopularWordList(popularWordList);
+    }
 
     // event handler 인기검색어 클릭 이벤트 처리
     const onPopularWordClickHandler = (word: string) => {
@@ -56,8 +96,8 @@ export default function Main() {
     
     //effect 첫 마운트 시 실행될 함수
     useEffect(() => {
-      setcurrentBoardList(latestBoardListMock);
-      setPopularWordList(['에스파', '배그', '게임', '자유게시판', '개발자', '군대', '군우', '군대생활', '군대썰', '군대이야기', '군대후기', '군대잡담']);
+      getLatestBoardListRequest().then(getLatestBoardListResponse);
+      getPopularListRequest().then(getPopularListResponse);
     }, []);
 
     //render 하단 랜더링
@@ -68,7 +108,7 @@ export default function Main() {
             <div className='main-bottom-title'>{'최신 게시물'}</div>
             <div className='main-bottom-content-box'>
               <div className='main-bottom-current-contents'>
-                {currentBoardList.map(boardListItem => <BoardItem boardListItem={boardListItem}/>)}
+                {viewList.map(boardListItem => <BoardItem boardListItem={boardListItem}/>)}
               </div>
               <div className='main-bottom-popular-box'>
                 <div className='main-bottom-popular-card'>
@@ -76,14 +116,20 @@ export default function Main() {
                     <div className='main-bottom-popular-card-title'>{'인기 검색어'}</div>
                     <div className='main-bottom-popular-card-contents'>
                       {popularWordList.map(word => <div className='word-badge' onClick={() => onPopularWordClickHandler(word)}>{word}</div>)}
-                      <div className='word-badge'></div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
             <div className='main-bottom-pagination-box'>
-              {/* {Pagination/} */}
+              <Pagination
+                currentPage={currentPage}
+                currentSection={currentSection}
+                setCurrentPage={setCurrentPage}
+                setCurrentSection={setCurrentSection}
+                viewPageList={viewPageList}
+                totalSection={totalSection}
+              />
             </div>
           </div>
         </div>
