@@ -7,7 +7,7 @@ import { PatchBoardRequestDto, PostboardRequestDto, PostCommentRequestDto } from
 import { PostBoardResponseDto, GetBoardResponseDto, IncreaseViewCountResponseDto, GetFavoriteListResponseDto, GetCommentListResponseDto, PutFavoriteResponseDto, PostCommentResponseDto, DeleteBoardResponseDto, PatchBoardResponseDto, GetLatestBoardListResponseDto, GetTop3BoardListResponseDto } from './response/board';
 import { GetPopularListResponseDto } from './response/search';
 
-const DOMAIN = 'http://localhost:8080';
+const DOMAIN = 'http://localhost:8082';
 
 const API_DOMAIN = `${DOMAIN}/api/v1`;
 
